@@ -34,3 +34,4 @@ A command prompt version of Amazon with the ability
     
 Video of app functioning:
 
+![Demo](https://github.com/rcintron1/bamazon/blob/master/bamazon.gif?raw=true)
