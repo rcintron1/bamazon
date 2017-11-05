@@ -169,7 +169,7 @@ function listInventory(query, askQ) {
                 console.log(res[i].item_id + " - " + res[i].product_name + " - $" + res[i].price.toFixed(2) + "- Deparment -" + res[i].department_name + "- Quantity Left -" + res[i].stock_quantity);
             }
         }
-        console.log(newline);
+
         if (askQ) { // This is to request the question to purchase
             inquirer.prompt({
                 name: "prompt",
@@ -182,7 +182,7 @@ function listInventory(query, askQ) {
                     main();
                 }
             });
-        }else{
+        } else {
             main();
         }
     });
@@ -241,19 +241,56 @@ function purchaseItem(item) {
 // management report
 
 // management add to inventory
-function addToInventory(values) {
-    connection.query(
-        "INSERT INTO products SET ?", {
-            product_name: values.product_name,
-            department_name: values.department_name,
-            price: values.price,
-            stocke_quantity: values.quantity
-        },
-        function (err) {
-            if (err) throw err;
-            console.log(values.quantity + " " + values.product_name + " have been added to inventory");
-            // re-prompt the user for if they want to bid or post
-            main();
+function addToInventory() {
+    inquirer.prompt(
+        [
+            {
+                name:"product_name",
+                type:"input",
+                message:"Enter Product Name"
+            },{
+                name:"department_name",
+                type:"list",
+                choices:["music","electronics","health","books","sports"],
+                message:"Select department"
+            },{
+                name:"price",
+                type:'input',
+                message:"What is the price",
+                validate: function (value) {
+                    var pass = value.match(/^\d+$/);
+                    if (pass) {
+                      return true;
+                    }
+                    return 'Please enter a valid phone number';
+                  }
+            },{
+                name:"quantity",
+                type:"input",
+                message:"Enter the quantity of items you are adding to inventory",
+                validate: function (value){
+                    var pass = value.match(/^\d+$/);
+                    if (pass) {
+                      return true;
+                    }
+                    return 'Please enter a valid phone number';
+                }
+            }
+        ]
+    ).then(function(values){
+        connection.query(
+            "INSERT INTO products SET ?", {
+                product_name: values.product_name,
+                department_name: values.department_name,
+                price: values.price,
+                stock_quantity: values.quantity
+            },
+            function (err) {
+                if (err) throw err;
+                console.log(values.quantity + " " + values.product_name + " have been added to inventory");
+                // re-prompt the user if they want to bid or post
+                main();
+            });
         });
 }
 
